@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<form class="panel" method="post" id="postForm" novalidate>
+  {{ form.hidden_tag() }}<h1>{{ heading }}</h1>
+  {{ field(form.title, 'A title that draws people in') }}
+  <div class="two">
+    <div>{{ field(form.category, 'e.g. Life, Tech', list='cats') }}
+      <datalist id="cats">{% for c in categories %}<option value="{{ c.name }}">{% endfor %}</datalist></div>
+    {{ field(form.tags, 'flask, python') }}
+  </div>
+  <div class="field">{{ form.body.label }}
+    <div id="editor"></div>
+    {{ form.body(class_='input', rows=12) }}
+    {% for e in form.body.errors %}<small class="err">{{ e }}</small>{% endfor %}
+  </div>
+  {{ form.submit(class_='btn') }}
+</form>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

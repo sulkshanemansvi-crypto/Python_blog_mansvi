@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}
+{% block content %}
+<form class="panel narrow" method="post" novalidate>
+  {{ form.hidden_tag() }}<h1>Welcome back</h1>
+  {{ field(form.username) }}{{ field(form.password) }}
+  {{ form.submit(class_='btn full') }}
+  <p class="alt">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+</form>
+{% endblock %}

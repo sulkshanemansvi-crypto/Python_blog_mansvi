@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card, pager %}
+{% block content %}
+<section class="profile">
+  <span class="av lg">{{ user.username[0]|upper }}</span>
+  <div>
+    <h1>{{ user.username }}</h1>
+    <p>{{ user.bio or 'This writer hasn\'t added a bio yet.' }}</p>
+    <small>Joined {{ user.created_at.strftime('%b %Y') }} · {{ pagination.total }} stories</small>
+    {% if current_user == user %}<p><a class="btn ghost" href="{{ url_for('auth.settings') }}">Edit profile</a></p>{% endif %}
+  </div>
+</section>
+{% for p in posts %}{{ card(p) }}{% else %}<div class="empty">No stories yet.</div>{% endfor %}
+{{ pager(pagination, 'main.profile', username=user.username) }}
+{% endblock %}

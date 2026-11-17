@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card, pager %}
+{% block content %}
+<section class="hero">
+  <h1>Hello, I'm <em>Mansvi</em>.</h1>
+  <p>{{ site_tagline }}. Read, write and chat about the things that matter.</p>
+</section>
+<div class="layout">
+  <section>
+    {% if q or cat or tag %}
+      <p class="filter">Showing {{ pagination.total }} result{{ '' if pagination.total == 1 else 's' }}
+        {% if q %}for “{{ q }}”{% endif %} · <a href="{{ url_for('main.index') }}">clear filters</a></p>
+    {% endif %}
+    {% for p in posts %}{{ card(p) }}{% else %}
+      <div class="empty">No stories found. <a href="{{ url_for('blog.create') }}">Write the first one →</a></div>
+    {% endfor %}
+    {{ pager(pagination, 'main.index', q=q or None, category=cat, tag=tag) }}
+  </section>
+  <aside>
+    <div class="side">
+      <h3>Categories</h3>
+      <div class="chips">{% for c in categories %}<a class="chip {{ 'on' if c.id == cat }}" href="{{ url_for('main.index', category=c.id, q=q or None) }}">{{ c.name }}</a>{% else %}<small>None yet</small>{% endfor %}</div>
+    </div>
+    <div class="side">
+      <h3>Tags</h3>
+      <div class="chips">{% for t in tags %}<a class="chip tag {{ 'on' if t.id == tag }}" href="{{ url_for('main.index', tag=t.id, q=q or None) }}">#{{ t.name }}</a>{% else %}<small>None yet</small>{% endfor %}</div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

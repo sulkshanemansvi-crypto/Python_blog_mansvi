@@ -1,0 +1,31 @@
+{% macro field(f, ph='') %}
+<div class="field">
+  {{ f.label }}
+  {{ f(placeholder=ph, class_='input' ~ (' is-bad' if f.errors else ''), **kwargs) }}
+  {% for e in f.errors %}<small class="err">{{ e }}</small>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro pager(pagination, endpoint) %}
+{% if pagination.pages > 1 %}
+<nav class="pager" aria-label="Pagination">
+  {% if pagination.has_prev %}<a href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}">← Newer</a>{% else %}<span class="off">← Newer</span>{% endif %}
+  <span class="pg">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}">Older →</a>{% else %}<span class="off">Older →</span>{% endif %}
+</nav>
+{% endif %}
+{% endmacro %}
+
+{% macro card(p) %}
+<article class="card">
+  {% if p.category %}<a class="chip" href="{{ url_for('main.index', category=p.category.id) }}">{{ p.category.name }}</a>{% endif %}
+  <h2><a href="{{ url_for('blog.detail', post_id=p.id) }}">{{ p.title }}</a></h2>
+  <p class="ex">{{ p.body|excerpt }}</p>
+  <div class="meta">
+    <a href="{{ url_for('main.profile', username=p.author.username) }}"><span class="av sm">{{ p.author.username[0]|upper }}</span>{{ p.author.username }}</a>
+    <span>· {{ p.created_at.strftime('%d %b %Y') }}</span>
+    <span>· {{ p.body|reading_time }} min read</span>
+    <span>· 💬 {{ p.comments.count() }}</span>
+  </div>
+</article>
+{% endmacro %}

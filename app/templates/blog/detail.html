@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="post">
+  {% if post.category %}<a class="chip" href="{{ url_for('main.index', category=post.category.id) }}">{{ post.category.name }}</a>{% endif %}
+  <h1>{{ post.title }}</h1>
+  <div class="meta">
+    <a href="{{ url_for('main.profile', username=post.author.username) }}"><span class="av sm">{{ post.author.username[0]|upper }}</span>{{ post.author.username }}</a>
+    <span>· {{ post.created_at.strftime('%d %b %Y') }}</span><span>· {{ post.body|reading_time }} min read</span>
+  </div>
+  <div class="prose">{{ post.body|safe }}</div>
+  <div class="chips">{% for t in post.tags %}<a class="chip tag" href="{{ url_for('main.index', tag=t.id) }}">#{{ t.name }}</a>{% endfor %}</div>
+  {% if current_user == post.author %}
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('blog.edit', post_id=post.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('blog.delete', post_id=post.id) }}" onsubmit="return confirm('Delete this story?')">
+      {{ form.csrf_token }}<button class="btn danger">Delete</button></form>
+  </div>{% endif %}
+</article>
+<section class="comments" id="comments">
+  <h2>{{ comments|length }} comment{{ '' if comments|length == 1 else 's' }}</h2>
+  {% for c in comments %}
+  <div class="comment">
+    <span class="av sm">{{ c.author.username[0]|upper }}</span>
+    <div><strong><a href="{{ url_for('main.profile', username=c.author.username) }}">{{ c.author.username }}</a></strong>
+      <small>{{ c.created_at.strftime('%d %b %Y, %H:%M') }}</small>
+      <p>{{ c.body }}</p>
+      {% if current_user.is_authenticated and (current_user == c.author or current_user == post.author) %}
+      <form method="post" action="{{ url_for('blog.delete_comment', comment_id=c.id) }}">{{ form.csrf_token }}<button class="link">remove</button></form>{% endif %}
+    </div>
+  </div>{% endfor %}
+  {% if current_user.is_authenticated %}
+  <form method="post" action="{{ url_for('blog.comment', post_id=post.id) }}" class="cform">
+    {{ form.csrf_token }}{{ form.body(class_='input', rows=3, placeholder='Share your thoughts…') }}
+    {{ form.submit(class_='btn') }}
+  </form>
+  {% else %}<p class="alt"><a href="{{ url_for('auth.login', next=request.path) }}">Log in</a> to join the conversation.</p>{% endif %}
+</section>
+{% endblock %}
